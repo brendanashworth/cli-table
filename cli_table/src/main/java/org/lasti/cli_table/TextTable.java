@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 public class TextTable {
 	private int indexNum = 0;
-//	private List<Entry<Integer, Object[]>> dataStore = new ArrayList<Entry<Integer, Object[]>>();
 	private Map<Integer, Object[]> dataStore = new HashMap<Integer, Object[]>();
 	private Entry<Integer, Boolean> orderBy = null;
 	private Object modifyLockObj = new Object();
