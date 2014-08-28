@@ -13,17 +13,11 @@ public class TextTable {
 	private Map<Integer, Object[]> dataStore = new HashMap<Integer, Object[]>();
 	private Entry<Integer, Boolean> orderBy = null;
 	private Object modifyLockObj = new Object();
-	protected char bar_6_12 = '│';
-	protected char bar_3_9 = '─';
-	protected char bar_3_6 = '┌';
-	protected char bar_6_9 = '┐';
-	protected char bar_9_12 = '┘';
-	protected char bar_3_12 = '└';
-	protected char bar_3_6_12 = '├';
-	protected char bar_3_6_9 = '┬';
-	protected char bar_6_9_12 = '┤';
-	protected char bar_3_9_12 = '┴';
-	protected char bar_3_6_9_12 = '┼';
+	
+	protected char nbar_3_9='-';
+	protected char nbar_6_12='|';
+	protected char nbar_3_6_9_12='+';
+	
 	private Object[] barObj = new Object[1];
 
 	public TextTable addRow(Object... dataArr) {
@@ -107,49 +101,53 @@ public class TextTable {
 		} //sync
 	} //order
 	
-	@Override
-	public synchronized String toString() {
-		order();
-
+	private Map<Integer, Integer> getColWidthMap(){
 		Map<Integer, Integer> colWidth=new HashMap<Integer, Integer>();
 		for (Object[] row : dataStore.values()){
 			if(row!=null && row!=barObj) {
 				for (int col = 0; col < row.length; col++) {
-					if(colWidth.get(col)==null || row.toString().length()>colWidth.get(col)){
+					if(colWidth.get(col)==null || row[col].toString().length()>colWidth.get(col)){
 						colWidth.put(col, Math.round((float)row[col].toString().length()/2)*2 );
 					} //if
 				} //for col
 			} //if
-		} //for 
-		
-		StringBuilder outputSb = new StringBuilder();
-		
-		//build top
-		outputSb.append(bar_3_6);
-		for (int col = 0; col < colWidth.size(); col++) {
-			outputSb.append(TextUtil.repeatCh(bar_3_9, Math.round(colWidth.get(col)/2)));
-			if(col<colWidth.size()-1)
-				outputSb.append(bar_3_6_9);
-		} //for i
-		outputSb.append(bar_6_9).append("\n");
+		} //for row
+		return colWidth;
+	} //getColWidthMap
 	
+	@Override
+	public synchronized String toString() {
+		order();
+
+		Map<Integer, Integer> colWidth=getColWidthMap();
+		StringBuilder outputSb = new StringBuilder();
+
+		//build top
+		outputSb.append(nbar_3_6_9_12);
+		for (int col = 0; col < colWidth.size(); col++) {
+			outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
+			if(col<colWidth.size()-1)
+				outputSb.append(nbar_3_6_9_12);
+		} //for i
+		outputSb.append(nbar_3_6_9_12).append("\n");
+
 		//build data
 		for (int i = 0; i < indexNum; i++) {
 			Object[] row=dataStore.get(i);
 			if(row==null)
 				continue;
-				
+
 			if(row==barObj){
 				//build bar
-				outputSb.append(bar_3_6_12);
+				outputSb.append(nbar_3_6_9_12);
 				for (int col = 0; col < colWidth.size(); col++) {
-					outputSb.append(TextUtil.repeatCh(bar_3_9, Math.round(colWidth.get(col)/2)));
+					outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
 					if(col<colWidth.size()-1)
-						outputSb.append(bar_3_6_9_12);
+						outputSb.append(nbar_3_6_9_12);
 				} //for i
-				outputSb.append(bar_6_9_12).append("\n");	
+				outputSb.append(nbar_3_6_9_12).append("\n");	
 			}else{
-				outputSb.append(bar_6_12);
+				outputSb.append(nbar_6_12);
 				for (int col = 0; col < row.length; col++) {
 					String rowData=row[col].toString();
 					int repeatBlank=colWidth.get(col)-rowData.length();
@@ -157,21 +155,21 @@ public class TextTable {
 					if(repeatBlank!=0){
 						outputSb.append(TextUtil.repeatCh(' ', repeatBlank));
 					} //if
-					outputSb.append(bar_6_12);
+					outputSb.append(nbar_6_12);
 				} //for col
 				outputSb.append("\n");
 			} //if
 		} //for i
-		
+
 		//build bottom
-		outputSb.append(bar_3_12);
+		outputSb.append(nbar_3_6_9_12);
 		for (int col = 0; col < colWidth.size(); col++) {
-			outputSb.append(TextUtil.repeatCh(bar_3_9, Math.round(colWidth.get(col)/2)));
+			outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
 			if(col<colWidth.size()-1)
-				outputSb.append(bar_3_9_12);
+				outputSb.append(nbar_3_6_9_12);
 		} //for i
-		outputSb.append(bar_9_12).append("\n");
-		
+		outputSb.append(nbar_3_6_9_12).append("\n");
+
 		return outputSb.toString();
 	} // toString
 } // class

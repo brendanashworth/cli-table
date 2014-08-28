@@ -11,11 +11,11 @@ public class TextTableTest {
 		table.addRow("test1", "test2", "test3");
 		table.addBar();
 		table.addRow("test1", "test2", "test3");
-		String expectResult="┌───┬───┬───┐\n"+
-									"│test1 │test2 │test3 │\n"+
-									"├───┼───┼───┤\n"+
-									"│test1 │test2 │test3 │\n"+
-									"└───┴───┴───┘\n";
+		String expectResult="+------+------+------+\n"+
+									"|test1 |test2 |test3 |\n"+
+									"+------+------+------+\n"+
+									"|test1 |test2 |test3 |\n"+
+									"+------+------+------+\n";
 		assertTrue(expectResult.equals(table.toString()));
 	}
 	
@@ -33,9 +33,9 @@ public class TextTableTest {
 				return false;
 			}
 		});
-		String expectResult="┌───┬─┐\n"+
-									"│james │44│\n"+
-									"└───┴─┘\n";
+		String expectResult="+------+--+\n"+
+									"|james |44|\n"+
+									"+------+--+\n";
 		assertTrue(expectResult.equals(table.toString()));
 	}
 	
@@ -46,11 +46,11 @@ public class TextTableTest {
 		table.addRow("tom", 11);
 		table.addRow("james", 44);
 		table.orderBy(1, false);
-		String expectResult="┌──┬─┐\n"+
-									"│james│44│\n"+
-									"│jone│23│\n"+
-									"│tom │11│\n"+
-									"└──┴─┘\n";
+		String expectResult="+------+--+\n"+
+									"|james |44|\n"+
+									"|jone  |23|\n"+
+									"|tom   |11|\n"+
+									"+------+--+\n";
 		assertTrue(expectResult.equals(table.toString()));
 	}
 	
@@ -65,15 +65,15 @@ public class TextTableTest {
 		table.addRow(2);
 		table.addRow(5);
 		table.orderBy(0, true);
-		String expectResult="┌─┐\n"+
-									"│2 │\n"+
-									"│3 │\n"+
-									"│8 │\n"+
-									"├─┤\n"+
-									"│2 │\n"+
-									"│4 │\n"+
-									"│5 │\n"+
-									"└─┘\n";
+		String expectResult="+--+\n"+
+									"|2 |\n"+
+									"|3 |\n"+
+									"|8 |\n"+
+									"+--+\n"+
+									"|2 |\n"+
+									"|4 |\n"+
+									"|5 |\n"+
+									"+--+\n";
 		assertTrue(expectResult.equals(table.toString()));
 	}
 }
