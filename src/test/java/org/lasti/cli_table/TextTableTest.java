@@ -61,13 +61,9 @@ public class TextTableTest {
 	@Test
 	public void testOrderBy2(){
 		TextTable table = new TextTable();
-		table.addRow(3);
-		table.addRow(2);
-		table.addRow(8);
+		table.addRow(3).addRow(2).addRow(8);
 		table.addBar();
-		table.addRow(4);
-		table.addRow(2);
-		table.addRow(5);
+		table.addRow(4).addRow(2).addRow(5);
 		table.orderBy(0, true);
 
 		String expectedResult = "+--+\n"+
