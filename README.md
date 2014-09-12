@@ -4,60 +4,58 @@
 
 # Usage
 ```java
-TextTable table = TextTable();
-table.addRow("name", "age");
+TextTable table = new TextTable();
+table.addRow("Name", "Age");
 table.addBar();
-table.addRow("personA", 24);
-table.addRow("personB", 22);
+table.addRow("Gracie Weber", 24);
+table.addRow("Lexi O'Conner", 22);
 
 System.out.println(table.toString());
 ```
 
 ```
-+--------+----+
-|name    |age |
-+--------+----+
-|personA |24  |
-|personB |22  |
-+--------+----+
++--------------+----+
+|Name          |Age |
++--------------+----+
+|Gracie Weber  |24  |
+|Lexi O'Conner |22  |
++--------------+----+
 ```
 
-## Order by
+## Order by statement
 ```java
-TextTable table = TextTable();
+TextTable table = new TextTable();
 
-table.addRow("name", "age");
+table.addRow("Name", "Age");
 table.addBar();
-table.addRow("personA", 24);
-table.addRow("personB", 22);
-table.orderBy(1, true); //order by first column asc
+table.addRow("Gracie Weber", 24);
+table.addRow("Lexi O'Conner", 22);
+table.orderBy(1, true); // order by first column, ascending
 
 System.out.println(table.toString());
 ```
 
 ~~~~
-+--------+----+
-|name    |age |
-+--------+----+
-|personB |22  |
-|personA |24  |
-+--------+----+
++--------------+----+
+|Name          |Age |
++--------------+----+
+|Lexi O'Conner |22  |
+|Gracie Weber  |24  |
++--------------+----+
 ~~~~
 
-## Where
+## Where statement
 ```java
-TextTable table = TextTable();
+TextTable table = new TextTable();
 
-table.addRow("name", "age");
+table.addRow("Name", "Age");
 table.addBar();
-table.addRow("personA", 24);
-table.addRow("personB", 22);
+table.addRow("Gracie Weber", 24);
+table.addRow("Lexi O'Conner", 22);
 table.where(1, new WhereComparator() {
 	@Override
 	public boolean onCompare(Object colData) {
-		if((Integer)colData>23)
-			return true;
-		return false;
+		return (Integer) colData > 23;
 	}
 });
 
@@ -65,9 +63,9 @@ System.out.println(table.toString());
 ```
 
 ```
-+--------+----+
-|name    |age |
-+--------+----+
-|personA |24  |
-+--------+----+
++-------------+----+
+|Name         |Age |
++-------------+----+
+|Gracie Weber |24  |
++-------------+----+
 ```

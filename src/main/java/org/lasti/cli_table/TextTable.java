@@ -14,61 +14,71 @@ public class TextTable {
 	private Entry<Integer, Boolean> orderBy = null;
 	private Object modifyLockObj = new Object();
 	
-	protected char nbar_3_9='-';
-	protected char nbar_6_12='|';
-	protected char nbar_3_6_9_12='+';
+	protected char horizontalBar = '-';
+	protected char verticalBar = '|';
+	protected char plusSign = '+';
 	
 	private Object[] barObj = new Object[1];
+
+	public TextTable() {
+		// empty constructor
+	}
 
 	public TextTable addRow(Object... dataArr) {
 		synchronized (modifyLockObj) {
 			dataStore.put(indexNum, dataArr);
 			indexNum++;
-		} // sync
+		}
+
 		return this;
-	} // addRow
+	}
 
 	public TextTable addRow(Collection dataColl) {
 		synchronized (modifyLockObj) {
 			dataStore.put(indexNum, dataColl.toArray());
 			indexNum++;
-		} // sync
+		}
+
 		return this;
-	} // addRow
+	}
 
 	public TextTable addRow(Iterable dataIter) {
 		synchronized (modifyLockObj) {
 			List<Object> dataList = new ArrayList<Object>();
 			for (Object data : dataIter)
 				dataList.add(data);
+
 			dataStore.put(indexNum, dataList.toArray());
 			indexNum++;
-		} // sync
+		}
+
 		return this;
-	} // addRow
+	}
 
 	public TextTable addBar() {
 		addRow(barObj);
 		return this;
-	} // addBar
+	}
 
 	public TextTable where(int col, WhereComparator whereComp) {
 		synchronized (modifyLockObj) {
 			for (int key = 0; key < indexNum; key++) {
-				Object[] row=dataStore.get(key);
-				if(row!=null && !whereComp.onCompare(row[col]))
+				Object[] row = dataStore.get(key);
+				if(row != null && !whereComp.onCompare(row[col]))
 					dataStore.remove(key);
-			} //for i
-		} // sync
+			}
+		}
+
 		return this;
-	} // where
+	}
 
 	public TextTable orderBy(int col, boolean asc) {
 		this.orderBy = new AbstractMap.SimpleEntry<Integer, Boolean>(col, asc);
-		return this;
-	} // orderBy
 
-	private void order(){
+		return this;
+	}
+
+	private void order() {
 		if (this.orderBy == null) 
 			return;
 		
@@ -87,89 +97,97 @@ public class TextTable {
 					Comparable leftData=(Comparable) dataStore.get(leftIndex)[orderBy.getKey()];
 					Comparable rightData=(Comparable) dataStore.get(rightIndex)[orderBy.getKey()];
 					int compResult=leftData.compareTo(rightData);
-					if(compResult<0 && !isAsc){
+					if(compResult<0 && !isAsc) {
 						Object[] tmpSwitch=dataStore.get(leftIndex);
 						dataStore.put(leftIndex, dataStore.get(rightIndex));
 						dataStore.put(rightIndex, tmpSwitch);
-					} else if(compResult>0 && isAsc){
+					} else if(compResult>0 && isAsc) {
 						Object[] tmpSwitch=dataStore.get(leftIndex);
 						dataStore.put(leftIndex, dataStore.get(rightIndex));
 						dataStore.put(rightIndex, tmpSwitch);
-					} //if
-				} //for i
-			} //for repeat
-		} //sync
-	} //order
+					}
+				}
+			}
+		}
+	}
 	
-	private Map<Integer, Integer> getColWidthMap(){
-		Map<Integer, Integer> colWidth=new HashMap<Integer, Integer>();
-		for (Object[] row : dataStore.values()){
-			if(row!=null && row!=barObj) {
+	private Map<Integer, Integer> getColWidthMap() {
+		Map<Integer, Integer> colWidth = new HashMap<Integer, Integer>();
+		// iterate over data store's values
+		for (Object[] row : dataStore.values()) {
+			if(row != null && row != barObj) {
 				for (int col = 0; col < row.length; col++) {
-					if(colWidth.get(col)==null || row[col].toString().length()>colWidth.get(col)){
-						colWidth.put(col, Math.round((float)row[col].toString().length()/2)*2 );
-					} //if
-				} //for col
-			} //if
-		} //for row
+					if (colWidth.get(col) == null || row[col].toString().length() > colWidth.get(col))
+						colWidth.put(col, Math.round((float) row[col].toString().length() / 2) * 2);
+				}
+			}
+		}
+
 		return colWidth;
-	} //getColWidthMap
+	}
 	
 	@Override
 	public synchronized String toString() {
-		order();
+		this.order();
 
-		Map<Integer, Integer> colWidth=getColWidthMap();
+		Map<Integer, Integer> colWidth = this.getColWidthMap();
 		StringBuilder outputSb = new StringBuilder();
 
-		//build top
-		outputSb.append(nbar_3_6_9_12);
+		// build top
+		outputSb.append(plusSign);
 		for (int col = 0; col < colWidth.size(); col++) {
-			outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
-			if(col<colWidth.size()-1)
-				outputSb.append(nbar_3_6_9_12);
-		} //for i
-		outputSb.append(nbar_3_6_9_12).append("\n");
+			outputSb.append(TextUtil.repeatCh(horizontalBar, colWidth.get(col)));
+			if(col < colWidth.size() - 1)
+				outputSb.append(plusSign);
+		}
 
-		//build data
+		outputSb.append(plusSign).append("\n");
+
+		// build data
 		for (int i = 0; i < indexNum; i++) {
-			Object[] row=dataStore.get(i);
-			if(row==null)
+			Object[] row = dataStore.get(i);
+			if(row == null)
 				continue;
 
-			if(row==barObj){
-				//build bar
-				outputSb.append(nbar_3_6_9_12);
-				for (int col = 0; col < colWidth.size(); col++) {
-					outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
-					if(col<colWidth.size()-1)
-						outputSb.append(nbar_3_6_9_12);
-				} //for i
-				outputSb.append(nbar_3_6_9_12).append("\n");	
-			}else{
-				outputSb.append(nbar_6_12);
-				for (int col = 0; col < row.length; col++) {
-					String rowData=row[col].toString();
-					int repeatBlank=colWidth.get(col)-rowData.length();
-					outputSb.append(rowData);
-					if(repeatBlank!=0){
-						outputSb.append(TextUtil.repeatCh(' ', repeatBlank));
-					} //if
-					outputSb.append(nbar_6_12);
-				} //for col
-				outputSb.append("\n");
-			} //if
-		} //for i
+			if(row == barObj) {
+				// build bar
+				outputSb.append(plusSign);
 
-		//build bottom
-		outputSb.append(nbar_3_6_9_12);
+				for (int col = 0; col < colWidth.size(); col++) {
+					outputSb.append(TextUtil.repeatCh(horizontalBar, colWidth.get(col)));
+					if(col < colWidth.size() - 1)
+						outputSb.append(plusSign);
+				}
+
+				outputSb.append(plusSign).append("\n");	
+			} else {
+				outputSb.append(verticalBar);
+
+				for (int col = 0; col < row.length; col++) {
+					String rowData = row[col].toString();
+					int repeatBlank = colWidth.get(col) - rowData.length();
+
+					outputSb.append(rowData);
+					if(repeatBlank != 0)
+						outputSb.append(TextUtil.repeatCh(' ', repeatBlank));
+
+					outputSb.append(verticalBar);
+				}
+
+				outputSb.append("\n");
+			}
+		}
+
+		// build bottom
+		outputSb.append(plusSign);
 		for (int col = 0; col < colWidth.size(); col++) {
-			outputSb.append(TextUtil.repeatCh(nbar_3_9, colWidth.get(col)));
-			if(col<colWidth.size()-1)
-				outputSb.append(nbar_3_6_9_12);
-		} //for i
-		outputSb.append(nbar_3_6_9_12).append("\n");
+			outputSb.append(TextUtil.repeatCh(horizontalBar, colWidth.get(col)));
+			if(col < colWidth.size() - 1)
+				outputSb.append(plusSign);
+		}
+
+		outputSb.append(plusSign).append("\n");
 
 		return outputSb.toString();
-	} // toString
-} // class
+	}
+}
